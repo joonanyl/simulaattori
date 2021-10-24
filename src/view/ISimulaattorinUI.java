@@ -11,7 +11,7 @@ public interface ISimulaattorinUI {
 	public int getKassat();
 	public int getIPKassat();
 	public void reset();
-	//Kontrolleri antaa käyttöliittymälle tuloksia, joita Moottori tuottaa
+	//Kontrolleri antaa käyttöliittymälle tietoa, joita Moottori tuottaa
 	public void lisaaAsiakaslistaan(Asiakas asiakas);
 	public void simuloinninJalkeen();
 	public void setAikaCounter(int aika);

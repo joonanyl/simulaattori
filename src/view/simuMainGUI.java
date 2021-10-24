@@ -17,6 +17,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -44,10 +45,10 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 	private Stage primaryStage;
 	private AnchorPane root;
 	private ObservableList<Asiakas> asiakaslista = FXCollections.observableArrayList();
-	private int ruokalinjastot;
-	private int kassat;
-	private int ipKassat;
-	
+	private List<Rectangle> ruokalinjastot = new ArrayList<Rectangle>();
+	private List<Rectangle> kassat = new ArrayList<Rectangle>();
+	private List<Rectangle> ipKassat = new ArrayList<Rectangle>();
+
 	@FXML
 	private Button kaynnistaBtn;
 	@FXML
@@ -62,7 +63,8 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 	private TextField aikaTF;
 	@FXML
 	private Text aikaCount;
-
+	@FXML
+	private ProgressBar progressbar;
 	@FXML
 	private TextField viiveTF;
 
@@ -90,9 +92,6 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 			this.primaryStage = primaryStage;
 			this.primaryStage.setTitle("Simulaattori");
 			this.kontrolleri = new Kontrolleri(this);
-			this.ruokalinjastot = 0;
-			this.kassat = 0;
-			this.ipKassat = 0;
 
 			FXMLLoader loader = new FXMLLoader();
 			// OG
@@ -114,13 +113,15 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 	public void kaynnistaSimulaatio() {
 		this.kontrolleri = new Kontrolleri(this);
 		// Tarkastetaan onko viiveen ja simulointiajan tekstikentät tyhjiä
-		if (tarkastaSyotteet())
+		if (tarkastaSyotteet()) {
 			kontrolleri.kaynnistaSimulointi();
+			kaynnistaBtn.setDisable(true);
+		}
 	}
 
 	private boolean tarkastaSyotteet() {
 		if (viiveTF.getText() != "" && aikaTF.getText() != "") {
-			if (ruokalinjastot == 0 || kassat == 0 || ipKassat == 0) {
+			if (ruokalinjastot.size() == 0 || kassat.size() == 0 || ipKassat.size() == 0) {
 				Alert a = new Alert(AlertType.WARNING);
 				a.setTitle("Varoitus");
 				a.setHeaderText("Palvelupisteitä on liian vähän!");
@@ -143,17 +144,31 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 		Rectangle pp = new Rectangle(75, 75);
 		ppTesti.add(pp);
 		pp.setFill(Color.GREEN);
-		pp.setOnMouseClicked((e) -> {
-			showTulos(ppTesti.indexOf(pp));
-		});
-		
-		
-		if (ppT == PalvelupisteenTyyppi.RUOKATISKI)
+
+		// Tapahtumankäsittelijän luonti PalvelupisteenTyypin perusteella
+		// Palvelupisteet luodaan OmaMoottorissa järjestyksessä
+		// Ruokatiski->Kassa->IPKassa, jonka takia pp:n naytaTulos indeksi annetaan
+		// tietyssä järjestyksessä
+
+		if (ppT == PalvelupisteenTyyppi.RUOKATISKI) {
 			ruokaVBox.getChildren().add(pp);
-		else if (ppT == PalvelupisteenTyyppi.KASSA)
+			ruokalinjastot.add(pp);
+			pp.setOnMouseClicked((e) -> {
+				naytaTulos(ruokalinjastot.indexOf(pp));
+			});
+		} else if (ppT == PalvelupisteenTyyppi.KASSA) {
 			kassaVBox.getChildren().add(pp);
-		else if (ppT == PalvelupisteenTyyppi.IPKASSA)
+			kassat.add(pp);
+			pp.setOnMouseClicked((e) -> {
+				naytaTulos(kassat.indexOf(pp) + ruokalinjastot.size());
+			});
+		} else if (ppT == PalvelupisteenTyyppi.IPKASSA) {
 			ipKassaVbox.getChildren().add(pp);
+			ipKassat.add(pp);
+			pp.setOnMouseClicked((e) -> {
+				naytaTulos(ipKassat.indexOf(pp) + ruokalinjastot.size() + kassat.size());
+			});
+		}
 	}
 
 	public void reset() {
@@ -163,104 +178,59 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 
 		ppTesti.clear();
 		asiakaslista.clear();
-		
-		ruokalinjastot = 0;
-		kassat = 0;
-		ipKassat = 0;
+
+		ruokalinjastot.clear();
+		kassat.clear();
+		ipKassat.clear();
 
 		ruokaPlus.setDisable(false);
 		kassaPlus.setDisable(false);
 		ipKassaPlus.setDisable(false);
-		
+
 		aikaCount.setText("Käytettu aika: ");
-		
+		progressbar.setProgress(0);
 		kontrolleri.reset();
+		kaynnistaBtn.setDisable(false);
 	}
 
 	public void lisaaRuokalinjasto() {
-		if (ruokalinjastot < 4) {
+		if (ruokalinjastot.size() < 4) {
 			lisääPalvelupiste(PalvelupisteenTyyppi.RUOKATISKI);
-			ruokalinjastot++;
-			if (ruokalinjastot == 4)
+			if (ruokalinjastot.size() == 4)
 				ruokaPlus.setDisable(true);
 		}
 	}
 
 	public void lisaaKassa() {
-		if (kassat < 3) {
+		if (kassat.size() < 3) {
 			lisääPalvelupiste(PalvelupisteenTyyppi.KASSA);
-			kassat++;
-			if (kassat == 3)
+			if (kassat.size() == 3)
 				kassaPlus.setDisable(true);
 		}
 	}
 
 	public void lisaaIPKassa() {
-		if (ipKassat < 3) {
+		if (ipKassat.size() < 3) {
 			lisääPalvelupiste(PalvelupisteenTyyppi.IPKASSA);
-			ipKassat++;
-			if (ipKassat == 3)
+			if (ipKassat.size() == 3)
 				ipKassaPlus.setDisable(true);
 		}
 	}
 
-	public void hidasta() {
-		kontrolleri.hidasta();
-	}
-
-	public void nopeuta() {
-		kontrolleri.nopeuta();
-	}
-
-	public ObservableList<Asiakas> getAsiakaslista() {
-		return asiakaslista;
-	}
-
-	@Override
-	public double getAika() {
-		return Long.parseLong(aikaTF.getText());
-	}
-
-	@Override
-	public long getViive() {
-		return Long.parseLong(viiveTF.getText());
-	}
-
-	public void varaaPalvelupiste(int i) {
-		ppTesti.get(i).setFill(Color.RED);
-	}
-
-	@Override
-	public void vapautaPalvelupiste(int i) {
-		ppTesti.get(i).setFill(Color.GREEN);
-	}
-
-	public void simuloinninJalkeen() {
-			kaynnistaBtn.setDisable(false);
-			asiakkaatBtn.setDisable(false);
-	}
-	// Muuta kenties ProgressBariksi?
-	public void setAikaCounter(int aika) {
-		aikaCount.setText("Käytettu aika: " + Integer.toString(aika));
-	}
-
-	public void lisaaAsiakaslistaan(Asiakas asiakas) {
-		asiakaslista.add(asiakas);
-	}
-
 	// Toimii jokaisen palvelupisteen (GUI:ssa Rectangle:t) onClick-metodina.
-	public void showTulos(int indeksi) {
+	// Hakee kontrollerilta moottorin palvelupisteet ja näyttää parametrin tulokset.
+	private void naytaTulos(int indeksi) {
 		Palvelupiste[] tulokset = kontrolleri.getPalvelupisteet();
 		if (tulokset != null) {
 			Alert a = new Alert(AlertType.INFORMATION);
 			a.setTitle("Tulokset");
-			a.setHeaderText(
-					"Palvelupisteen " + tulokset[indeksi].getPpNimi() + " " + tulokset[indeksi].getPpNum() + " tulokset");
+			a.setHeaderText("Palvelupisteen " + tulokset[indeksi].getPpNimi() + " " + tulokset[indeksi].getPpNum()
+					+ " tulokset");
 			a.setContentText(tulokset[indeksi].getSimuTulos());
 			a.showAndWait();
 		}
 	}
-	
+
 	// Luo uuden ikkunan, jossa näkyy asiakkaiden simulointitulokset
 	public void avaaAsiakasIkkuna() {
 		// TableView esittää asiakkaiden simutulokset
@@ -294,18 +264,60 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 		asiakasIkkuna.showAndWait();
 	}
 
+	public void hidasta() {
+		kontrolleri.hidasta();
+	}
+
+	public void nopeuta() {
+		kontrolleri.nopeuta();
+	}
+
+	@Override
+	public double getAika() {
+		return Long.parseLong(aikaTF.getText());
+	}
+
+	@Override
+	public long getViive() {
+		return Long.parseLong(viiveTF.getText());
+	}
+
+	public void varaaPalvelupiste(int i) {
+		ppTesti.get(i).setFill(Color.RED);
+	}
+
+	@Override
+	public void vapautaPalvelupiste(int i) {
+		ppTesti.get(i).setFill(Color.GREEN);
+	}
+
+	public void simuloinninJalkeen() {
+		
+		asiakkaatBtn.setDisable(false);
+	}
+
+	// Muuta kenties ProgressBariksi?
+	public void setAikaCounter(int aika) {
+		aikaCount.setText("Käytettu aika: " + Integer.toString(aika));
+		progressbar.setProgress(aika / Double.parseDouble(aikaTF.getText()));
+	}
+
+	public void lisaaAsiakaslistaan(Asiakas asiakas) {
+		asiakaslista.add(asiakas);
+	}
+
 	public int getRuokalinjastot() {
-		return ruokalinjastot;
+		return ruokalinjastot.size();
 	}
 
 	public int getKassat() {
-		return kassat;
+		return kassat.size();
 	}
 
 	public int getIPKassat() {
-		return ipKassat;
+		return ipKassat.size();
 	}
-
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
