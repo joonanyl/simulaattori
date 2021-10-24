@@ -11,10 +11,9 @@ public class Kontrolleri implements IKontrolleri{   // UUSI
 	
 	private IMoottori moottori; 
 	private ISimulaattorinUI ui;
-	private ISimulaattorinUI mainUI;
 	
 	public Kontrolleri(ISimulaattorinUI ui) {
-		this.mainUI = ui;
+		this.ui = ui;
 		moottori = new OmaMoottori(this); // luodaan uusi moottorisäie jokaista simulointia varten
 		
 	}
@@ -22,8 +21,8 @@ public class Kontrolleri implements IKontrolleri{   // UUSI
 	@Override
 	public void kaynnistaSimulointi() {	
 		moottori.luoPalvelupisteet();
-		moottori.setSimulointiaika(mainUI.getAika());
-		moottori.setViive(mainUI.getViive());
+		moottori.setSimulointiaika(ui.getAika());
+		moottori.setViive(ui.getViive());
 		((Thread)moottori).start();
 	}
 	
@@ -36,11 +35,6 @@ public class Kontrolleri implements IKontrolleri{   // UUSI
 	public void nopeuta() { // nopeutetaan moottorisäiettä
 		moottori.setViive((long)(moottori.getViive()*0.9));
 	}
-	
-	@Override
-	public void naytaLoppuaika(double aika) {
-		Platform.runLater(()->ui.setLoppuaika(aika)); 
-	}
 
 	public void varaaPP(int indeksi) {
 		Platform.runLater(new Runnable() {
@@ -48,7 +42,7 @@ public class Kontrolleri implements IKontrolleri{   // UUSI
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				mainUI.varaaPalvelupiste(indeksi);
+				ui.varaaPalvelupiste(indeksi);
 			}
 		});
 	}
@@ -58,39 +52,49 @@ public class Kontrolleri implements IKontrolleri{   // UUSI
 			
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
-				mainUI.vapautaPalvelupiste(indeksi);
+				ui.vapautaPalvelupiste(indeksi);
 			}
 		});
 	}
 	
-	public void setKaynnistaBtn() {
-		mainUI.simuloinninJalkeen();
+	public void simuloinninJalkeen() {
+		ui.simuloinninJalkeen();
 	}
 	
-	public void setCounter(double aika) {
-		mainUI.setAikaCounter((int) aika);
+	public void setAika(double aika) {
+		Platform.runLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				ui.setAikaCounter((int) aika);
+			}
+		});
+		
 	}
 	
 	public Palvelupiste[] getPalvelupisteet(){	return moottori.getPalvelupisteet(); }
 
 	@Override
 	public void vieAsiakaslistaan(Asiakas asiakas) {
-		mainUI.lisaaAsiakaslistaan(asiakas);
+		ui.lisaaAsiakaslistaan(asiakas);
 	}
 
 	@Override
 	public int getKassat() {
-		return mainUI.getKassat();
+		return ui.getKassat();
 	}
 
 	@Override
 	public int getIPKassat() {
-		return mainUI.getIPKassat();
+		return ui.getIPKassat();
 	}
 
 	@Override
 	public int getRuokalinjastot() {
-		return mainUI.getRuokalinjastot();
+		return ui.getRuokalinjastot();
+	}
+	
+	public void reset() {
+		moottori.reset();
 	}
 }

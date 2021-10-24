@@ -68,21 +68,6 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 	private TextField viiveTF;
 
 	@FXML
-	private Rectangle kassa1;
-	@FXML
-	private Rectangle kassa2;
-
-	@FXML
-	private Rectangle linjasto1;
-	@FXML
-	private Rectangle linjasto2;
-
-	@FXML
-	private Rectangle ipKassa1;
-	@FXML
-	private Rectangle ipKassa2;
-
-	@FXML
 	private VBox ruokaVBox;
 	@FXML
 	private VBox kassaVBox;
@@ -185,13 +170,14 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 			ipKassaVbox.getChildren().add(pp);
 	}
 
-	public void tyhjennaPalvelupisteet() {
+	public void reset() {
 		ruokaVBox.getChildren().clear();
 		kassaVBox.getChildren().clear();
 		ipKassaVbox.getChildren().clear();
 
 		ppTesti.clear();
-
+		asiakaslista.clear();
+		
 		ruokalinjastot = 0;
 		kassat = 0;
 		ipKassat = 0;
@@ -199,6 +185,10 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 		ruokaPlus.setDisable(false);
 		kassaPlus.setDisable(false);
 		ipKassaPlus.setDisable(false);
+		
+		aikaCount.setText("Käytettu aika: ");
+		
+		kontrolleri.reset();
 	}
 
 	public void lisaaRuokalinjasto() {
@@ -250,12 +240,6 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 		return Long.parseLong(viiveTF.getText());
 	}
 
-	@Override
-	public void setLoppuaika(double aika) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void varaaPalvelupiste(int i) {
 		ppTesti.get(i).setFill(Color.RED);
 	}
@@ -267,10 +251,9 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 
 	public void simuloinninJalkeen() {
 			kaynnistaBtn.setDisable(false);
-
 			asiakkaatBtn.setDisable(false);
 	}
-
+	// Muuta kenties ProgressBariksi?
 	public void setAikaCounter(int aika) {
 		aikaCount.setText("Käytettu aika: " + Integer.toString(aika));
 	}
@@ -289,7 +272,8 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 		a.setContentText(tulokset[indeksi].getSimuTulos());
 		a.showAndWait();
 	}
-
+	
+	// Luo uuden ikkunan, jossa näkyy asiakkaiden simulointitulokset
 	public void avaaAsiakasIkkuna() {
 		// TableView esittää asiakkaiden simutulokset
 		TableView<Asiakas> tv = new TableView<>();

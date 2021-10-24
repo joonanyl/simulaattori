@@ -51,6 +51,13 @@ public class Asiakas {
 	public double getKokonaisaika() {
 		return poistumisaika - saapumisaika;
 	}
+	
+	public void reset() {
+		i = 1;
+		sum = 0;
+		Kello.getInstance().setAika(0);
+		System.out.println("Kello: " + Kello.getInstance().getAika());
+	}
 
 	public void raportti(){
 		Trace.out(Trace.Level.INFO, "\nAsiakas "+id+ " valmis! ");

@@ -84,7 +84,7 @@
          </children>
       </AnchorPane>
       <Button fx:id="kaynnistaBtn" mnemonicParsing="false" onAction="#kaynnistaSimulaatio" style="-fx-cursor: HAND;" text="Käynnistä" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" />
-      <Button fx:id="tyhjennaBtn" layoutX="728.0" layoutY="575.0" mnemonicParsing="false" onAction="#tyhjennaPalvelupisteet" style="-fx-cursor: HAND;" text="Tyhjennä" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="90.0" />
+      <Button fx:id="tyhjennaBtn" layoutX="728.0" layoutY="575.0" mnemonicParsing="false" onAction="#reset" style="-fx-cursor: HAND;" text="Tyhjennä" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="90.0" />
       <AnchorPane layoutX="262.0" layoutY="27.0" prefHeight="540.0" prefWidth="538.0" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="262.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="27.0">
          <children>
             <Label text="Ruokalinjastot" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="0.0">

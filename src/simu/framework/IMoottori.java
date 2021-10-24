@@ -10,4 +10,5 @@ public interface IMoottori { // UUSI
 	public void setViive(long aika);
 	public long getViive();
 	public Palvelupiste[] getPalvelupisteet();
+	public void reset();
 }

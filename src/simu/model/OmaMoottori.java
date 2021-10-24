@@ -28,7 +28,7 @@ public class OmaMoottori extends Moottori {
 	private Palvelupiste[] ruokatiskit, kaikkiKassat, kassat, ipKassat;
 
 	// Asetukset
-	private int ruokatiskienLkm = 2, kassojenLkm = 2, ipKassojenLkm = 2;
+	private int ruokatiskienLkm, kassojenLkm, ipKassojenLkm;
 	private int[] asiakkaatKerralla = { 1, 5 }; // asiakkaiden min ja max lkm, jotka saapuvat ruokalaan kerralla
 
 	private double[] ruokatiskinAikaRajat = { 3d, 6d }; // min palveluaika, maks palveluaika
@@ -44,7 +44,6 @@ public class OmaMoottori extends Moottori {
 		Normal kassaJakauma = this.getNormalGenerator(kassanAikaRajat[0], kassanAikaRajat[1]);
 		Normal ipKassaJakauma = this.getNormalGenerator(ipKassanAikaRajat[0], ipKassanAikaRajat[1]);
 		jakaumat = new Normal[] { ruokatiskiJakauma, kassaJakauma, ipKassaJakauma };
-
 	}
 
 	@Override
@@ -95,7 +94,7 @@ public class OmaMoottori extends Moottori {
 			break;
 		}
 		// TODO: korjaa simuMainGUI:sta setText, aikaCount on null
-		kontrolleri.setCounter(super.tapahtumalista.getSeuraavanAika());
+		kontrolleri.setAika(super.tapahtumalista.getSeuraavanAika());
 	}
 
 	// Palauttaa parametrinä annettujen Palvelupisteiden lyhyimmän jonon
@@ -205,7 +204,7 @@ public class OmaMoottori extends Moottori {
 	@Override
 	protected void tulokset() {
 		System.out.println("Simulointi päättyi kello " + Kello.getInstance().getAika());
-		kontrolleri.setKaynnistaBtn();
+		kontrolleri.simuloinninJalkeen();
 		Set<Palvelupiste> palvelupisteSet = new HashSet<Palvelupiste>();
 		Simulointi sim = new Simulointi();
 		for (int i = 0; i < palvelupisteet.length; i++) {
@@ -329,6 +328,17 @@ public class OmaMoottori extends Moottori {
 		}
 
 		return status;
+	}
+	
+	public void reset() {
+		Asiakas a = new Asiakas();
+		Palvelupiste pp = new Palvelupiste();
+		a.reset();
+		pp.reset();
+		
+		Normal ruokatiskiJakauma = this.getNormalGenerator(ruokatiskinAikaRajat[0], ruokatiskinAikaRajat[1]);
+		Normal kassaJakauma = this.getNormalGenerator(kassanAikaRajat[0], kassanAikaRajat[1]);
+		Normal ipKassaJakauma = this.getNormalGenerator(ipKassanAikaRajat[0], ipKassanAikaRajat[1]);
 	}
 
 }

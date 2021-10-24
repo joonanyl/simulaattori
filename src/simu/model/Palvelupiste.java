@@ -99,9 +99,10 @@ public class Palvelupiste {
 		this.keskiLapiMenoAika = laskeKeskiLapiMenoAika();
 		this.keskiJononpituus = laskeKeskiJononpituus();
 	}
-
+	
+	// Tulostaa konsoliin palvelupisteen tulokset
 	public void raportti() {
-		System.out.println("\n" + this.ppNimi + (this.ppNum - 2) + ", suorituskykysuureet:\n");
+		System.out.println("\n" + this.ppNimi + (this.ppNum) + ", suorituskykysuureet:\n");
 
 		System.out.println("Palveltujen asiakkaiden lukumäärä: " + this.getAsiakkaidenLkm());
 		System.out.println("Palvelupisteen aktiiviaika: " + this.getAktiiviaika());
@@ -291,6 +292,13 @@ public class Palvelupiste {
 		return this.ppNum;
 	}
 
+	public void reset() {
+		nextRuokatiskiNum = 1;
+		nextKassaNum = 1; 
+		nextIpKassaNum = 1;
+		nextPpId = 0;
+	}
+	
 	@Override
 	public String toString() {
 		return "Palvelupiste " + ppNimi;
