@@ -22,6 +22,9 @@ public class OmaMoottori extends Moottori {
 	PalvelupisteDAO palvelupisteDAO = new PalvelupisteDAO();
 
 	Kello kello = Kello.getInstance();
+	Normal ruokatiskiJakauma;
+	Normal kassaJakauma;
+	Normal ipKassaJakauma;
 	Normal[] jakaumat;
 
 	private Saapumisprosessi saapumisprosessi;
@@ -93,7 +96,6 @@ public class OmaMoottori extends Moottori {
 			kontrolleri.vieAsiakaslistaan(a);
 			break;
 		}
-		// TODO: korjaa simuMainGUI:sta setText, aikaCount on null
 		kontrolleri.setAika(super.tapahtumalista.getSeuraavanAika());
 	}
 
@@ -335,10 +337,10 @@ public class OmaMoottori extends Moottori {
 		Palvelupiste pp = new Palvelupiste();
 		a.reset();
 		pp.reset();
-		
-		Normal ruokatiskiJakauma = this.getNormalGenerator(ruokatiskinAikaRajat[0], ruokatiskinAikaRajat[1]);
-		Normal kassaJakauma = this.getNormalGenerator(kassanAikaRajat[0], kassanAikaRajat[1]);
-		Normal ipKassaJakauma = this.getNormalGenerator(ipKassanAikaRajat[0], ipKassanAikaRajat[1]);
+		super.palvelupisteet = null;
+		ruokatiskiJakauma = this.getNormalGenerator(ruokatiskinAikaRajat[0], ruokatiskinAikaRajat[1]);
+		kassaJakauma = this.getNormalGenerator(kassanAikaRajat[0], kassanAikaRajat[1]);
+		ipKassaJakauma = this.getNormalGenerator(ipKassanAikaRajat[0], ipKassanAikaRajat[1]);
 	}
 
 }

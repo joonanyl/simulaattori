@@ -40,7 +40,6 @@ import simu.model.PalvelupisteenTyyppi;
 public class simuMainGUI extends Application implements ISimulaattorinUI {
 
 	private IKontrolleri kontrolleri;
-	private Rectangle[] palvelupisteet;
 	private List<Rectangle> ppTesti = new ArrayList<Rectangle>();
 	private Stage primaryStage;
 	private AnchorPane root;
@@ -48,7 +47,7 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 	private int ruokalinjastot;
 	private int kassat;
 	private int ipKassat;
-
+	
 	@FXML
 	private Button kaynnistaBtn;
 	@FXML
@@ -113,7 +112,6 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 	}
 
 	public void kaynnistaSimulaatio() {
-		// alustaPalvelupisteet();
 		this.kontrolleri = new Kontrolleri(this);
 		// Tarkastetaan onko viiveen ja simulointiajan tekstikentät tyhjiä
 		if (tarkastaSyotteet())
@@ -138,18 +136,6 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 			a.setContentText("Tarkasta antamasi syötteet uudelleen.");
 			a.showAndWait();
 			return false;
-		}
-	}
-
-	public void alustaPalvelupisteet() {
-		this.palvelupisteet = new Rectangle[kassat + ipKassat + ruokalinjastot];
-
-		// Palvelupisteiden tapahtumankuuntelijoiden luonti
-		for (int i = 0; i < palvelupisteet.length; i++) {
-			int x = i;
-			palvelupisteet[i].setOnMouseClicked((event) -> {
-				showTulos(x);
-			});
 		}
 	}
 
@@ -265,19 +251,20 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 	// Toimii jokaisen palvelupisteen (GUI:ssa Rectangle:t) onClick-metodina.
 	public void showTulos(int indeksi) {
 		Palvelupiste[] tulokset = kontrolleri.getPalvelupisteet();
-		Alert a = new Alert(AlertType.INFORMATION);
-		a.setTitle("Tulokset");
-		a.setHeaderText(
-				"Palvelupisteen " + tulokset[indeksi].getPpNimi() + " " + tulokset[indeksi].getPpNum() + " tulokset");
-		a.setContentText(tulokset[indeksi].getSimuTulos());
-		a.showAndWait();
+		if (tulokset != null) {
+			Alert a = new Alert(AlertType.INFORMATION);
+			a.setTitle("Tulokset");
+			a.setHeaderText(
+					"Palvelupisteen " + tulokset[indeksi].getPpNimi() + " " + tulokset[indeksi].getPpNum() + " tulokset");
+			a.setContentText(tulokset[indeksi].getSimuTulos());
+			a.showAndWait();
+		}
 	}
 	
 	// Luo uuden ikkunan, jossa näkyy asiakkaiden simulointitulokset
 	public void avaaAsiakasIkkuna() {
 		// TableView esittää asiakkaiden simutulokset
-		TableView<Asiakas> tv = new TableView<>();
-
+		TableView<Asiakas> tv = new TableView<Asiakas>();
 		// Luodaan kolumnit ja asetetaan arvojen nimet, jotka lisätään niihin
 		TableColumn<Asiakas, Integer> idColumn = new TableColumn<>("Asiakasnumero");
 		idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
