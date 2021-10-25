@@ -3,30 +3,23 @@ package view;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import controller.IKontrolleri;
 import controller.Kontrolleri;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -94,10 +87,6 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 			this.kontrolleri = new Kontrolleri(this);
 
 			FXMLLoader loader = new FXMLLoader();
-			// OG
-			// loader.setLocation(simuMainGUI.class.getResource("simuNakyma.fxml"));
-
-			// Testi
 			loader.setLocation(simuMainGUI.class.getResource("simuView.fxml"));
 
 			root = (AnchorPane) loader.load();
@@ -112,10 +101,13 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 
 	public void kaynnistaSimulaatio() {
 		this.kontrolleri = new Kontrolleri(this);
-		// Tarkastetaan onko viiveen ja simulointiajan tekstikentät tyhjiä
+		// Tarkastetaan onko viiveen ja simulointiajan tekstikentät täytetty
 		if (tarkastaSyotteet()) {
 			kontrolleri.kaynnistaSimulointi();
 			kaynnistaBtn.setDisable(true);
+			kassaPlus.setDisable(true);
+			ruokaPlus.setDisable(true);
+			ipKassaPlus.setDisable(true);
 		}
 	}
 
@@ -220,14 +212,18 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 	// Toimii jokaisen palvelupisteen (GUI:ssa Rectangle:t) onClick-metodina.
 	// Hakee kontrollerilta moottorin palvelupisteet ja näyttää parametrin tulokset.
 	private void naytaTulos(int indeksi) {
-		Palvelupiste[] tulokset = kontrolleri.getPalvelupisteet();
-		if (tulokset != null) {
-			Alert a = new Alert(AlertType.INFORMATION);
-			a.setTitle("Tulokset");
-			a.setHeaderText("Palvelupisteen " + tulokset[indeksi].getPpNimi() + " " + tulokset[indeksi].getPpNum()
-					+ " tulokset");
-			a.setContentText(tulokset[indeksi].getSimuTulos());
-			a.showAndWait();
+		try {
+			Palvelupiste[] tulokset = kontrolleri.getPalvelupisteet();
+			if (tulokset != null) {
+				Alert a = new Alert(AlertType.INFORMATION);
+				a.setTitle("Tulokset");
+				a.setHeaderText("Palvelupisteen " + tulokset[indeksi].getPpNimi() + " " + tulokset[indeksi].getPpNum()
+						+ " tulokset");
+				a.setContentText(tulokset[indeksi].getSimuTulos());
+				a.showAndWait();
+		}
+		} catch (NullPointerException e) {
+			throw e;
 		}
 	}
 
@@ -274,12 +270,32 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 
 	@Override
 	public double getAika() {
-		return Long.parseLong(aikaTF.getText());
+		Long aika = (long) 0;
+		try {
+			aika = Long.parseLong(aikaTF.getText());
+		} catch (NumberFormatException e) {
+			Alert a = new Alert(AlertType.WARNING);
+			a.setTitle("Varoitus");
+			a.setHeaderText("Antamasi aika on syötettu annettu väärin");
+			a.setContentText("Tarkasta antamasi arvo. Muista, että voit syöttää vain numeroita!");
+			a.showAndWait();
+		}
+		return aika;	
 	}
 
 	@Override
 	public long getViive() {
-		return Long.parseLong(viiveTF.getText());
+		Long viive = (long) 0;
+		try {
+			viive = Long.parseLong(viiveTF.getText());
+		} catch (NumberFormatException e) {
+			Alert a = new Alert(AlertType.WARNING);
+			a.setTitle("Varoitus");
+			a.setHeaderText("Antamasi viive on annettu väärin");
+			a.setContentText("Tarkasta antamasi arvo. Muista, että voit syöttää vain numeroita!");
+			a.showAndWait();
+		}
+		return viive;
 	}
 
 	public void varaaPalvelupiste(int i) {
@@ -292,11 +308,9 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 	}
 
 	public void simuloinninJalkeen() {
-		
 		asiakkaatBtn.setDisable(false);
 	}
 
-	// Muuta kenties ProgressBariksi?
 	public void setAikaCounter(int aika) {
 		aikaCount.setText("Käytettu aika: " + Integer.toString(aika));
 		progressbar.setProgress(aika / Double.parseDouble(aikaTF.getText()));
@@ -317,7 +331,7 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 	public int getIPKassat() {
 		return ipKassat.size();
 	}
-	
+
 	public static void main(String[] args) {
 		launch(args);
 	}
