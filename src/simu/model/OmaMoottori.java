@@ -70,7 +70,6 @@ public class OmaMoottori extends Moottori {
 				uusiAsiakas.setJonoonSaapumisAika(kello.getAika());
 			}
 
-			System.out.println("ppID: " + ruokatiski.getPpID());
 			int mihin = ruokatiski.getPpID();
 			kontrolleri.varaaPP(mihin);
 			saapumisprosessi.generoiSeuraava();
@@ -141,25 +140,24 @@ public class OmaMoottori extends Moottori {
 	}
 
 	private void generoiPalvelupisteet(Normal[] jakaumat) {
-		int counter = 0;
-		System.out.println("GENEROIPALVELUPISTEET: \n" + ruokatiskit.length + " " + kassat.length + " " + ipKassat.length);
+		int ppID = 0;
 		
 		// Ruokalinjastot
 		for (int i = 0; i < ruokatiskienLkm; i++) {
-			ruokatiskit[i] = new Palvelupiste(jakaumat[0], tapahtumalista, PalvelupisteenTyyppi.RUOKATISKI, counter);
-			counter++;
+			ruokatiskit[i] = new Palvelupiste(jakaumat[0], tapahtumalista, PalvelupisteenTyyppi.RUOKATISKI, ppID);
+			ppID++;
 		}
 
 		// Kassat
 		for (int i = 0; i < kassojenLkm; i++) {
-			kassat[i] = new Palvelupiste(jakaumat[1], tapahtumalista, PalvelupisteenTyyppi.KASSA, counter);
-			counter++;
+			kassat[i] = new Palvelupiste(jakaumat[1], tapahtumalista, PalvelupisteenTyyppi.KASSA, ppID);
+			ppID++;
 		}
 
 		// IP-Kassat
 		for (int i = 0; i < ipKassojenLkm; i++) {
-			ipKassat[i] = new Palvelupiste(jakaumat[2], tapahtumalista, PalvelupisteenTyyppi.IPKASSA, counter);
-			counter++;
+			ipKassat[i] = new Palvelupiste(jakaumat[2], tapahtumalista, PalvelupisteenTyyppi.IPKASSA, ppID);
+			ppID++;
 		}
 	}
 
@@ -170,7 +168,6 @@ public class OmaMoottori extends Moottori {
 		ipKassojenLkm = kontrolleri.getIPKassat();
 
 		ruokatiskit = new Palvelupiste[ruokatiskienLkm];
-		System.out.println("Ruokatiskit: " + ruokatiskit.length);
 		kassat = new Palvelupiste[kassojenLkm];
 		ipKassat = new Palvelupiste[ipKassojenLkm];
 		generoiPalvelupisteet(jakaumat);

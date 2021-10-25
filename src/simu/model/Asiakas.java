@@ -56,7 +56,6 @@ public class Asiakas {
 		i = 1;
 		sum = 0;
 		Kello.getInstance().setAika(0);
-		System.out.println("Kello: " + Kello.getInstance().getAika());
 	}
 
 	public void raportti(){
