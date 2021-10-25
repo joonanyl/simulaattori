@@ -14,6 +14,12 @@ public interface IKontrolleri {
 		public int getKassat();
 		public int getIPKassat();
 		public int getRuokalinjastot();
+		public double getIpKassaMax();
+		public double getIpKassaMin();
+		public double getKassaMax();
+		public double getKassaMin();
+		public double getRuokaMax();
+		public double getRuokaMin();
 		public void vieAsiakaslistaan(Asiakas asiakas);
 		public void simuloinninJalkeen();
 		public void setAika(double aika);

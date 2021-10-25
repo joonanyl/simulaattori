@@ -11,6 +11,12 @@ public interface ISimulaattorinUI {
 	public int getKassat();
 	public int getIPKassat();
 	public void reset();
+	public double getIpKassaMax();
+	public double getIpKassaMin();
+	public double getKassaMax();
+	public double getKassaMin();
+	public double getRuokaMax();
+	public double getRuokaMin();
 	//Kontrolleri antaa käyttöliittymälle tietoa, joita Moottori tuottaa
 	public void lisaaAsiakaslistaan(Asiakas asiakas);
 	public void simuloinninJalkeen();

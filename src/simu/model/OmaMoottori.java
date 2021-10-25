@@ -39,14 +39,7 @@ public class OmaMoottori extends Moottori {
 	private double[] ipKassanAikaRajat = { 1.7d, 3d }; // min palveluaika, maks palveluaika
 
 	public OmaMoottori(IKontrolleri kontrolleri) {
-
 		super(kontrolleri);
-
-		// Generoidaan Normal jakaumat palvelupisteille
-		Normal ruokatiskiJakauma = this.getNormalGenerator(ruokatiskinAikaRajat[0], ruokatiskinAikaRajat[1]);
-		Normal kassaJakauma = this.getNormalGenerator(kassanAikaRajat[0], kassanAikaRajat[1]);
-		Normal ipKassaJakauma = this.getNormalGenerator(ipKassanAikaRajat[0], ipKassanAikaRajat[1]);
-		jakaumat = new Normal[] { ruokatiskiJakauma, kassaJakauma, ipKassaJakauma };
 	}
 
 	@Override
@@ -162,6 +155,17 @@ public class OmaMoottori extends Moottori {
 	}
 
 	public void luoPalvelupisteet() {
+		// Palvelupisteiden aikarajojen haku käyttöliittymästä
+		setRuokatiskinAikaRajat(new double[]{kontrolleri.getRuokaMin(), kontrolleri.getRuokaMax()});
+		setKassanAikaRajat(new double[]{kontrolleri.getKassaMin(), kontrolleri.getKassaMax()});
+		setIpKassanAikaRajat(new double[]{kontrolleri.getIpKassaMin(), kontrolleri.getIpKassaMax()});
+	
+		// Generoidaan Normal jakaumat palvelupisteille
+		Normal ruokatiskiJakauma = this.getNormalGenerator(ruokatiskinAikaRajat[0], ruokatiskinAikaRajat[1]);
+		Normal kassaJakauma = this.getNormalGenerator(kassanAikaRajat[0], kassanAikaRajat[1]);
+		Normal ipKassaJakauma = this.getNormalGenerator(ipKassanAikaRajat[0], ipKassanAikaRajat[1]);
+		jakaumat = new Normal[] { ruokatiskiJakauma, kassaJakauma, ipKassaJakauma };
+		
 		// Generoidaan palvelupisteet
 		ruokatiskienLkm = kontrolleri.getRuokalinjastot();
 		kassojenLkm = kontrolleri.getKassat();
@@ -224,7 +228,7 @@ public class OmaMoottori extends Moottori {
 		sim.setKassojenLkm(kassojenLkm);
 		sim.setIpKassojenLkm(ipKassojenLkm);
 		sim.setAsiakkaatKerrallaMin(asiakkaatKerralla[0]);
-		sim.setAsiakkaatKerrallaMax(asiakkaatKerralla[0]);
+		sim.setAsiakkaatKerrallaMax(asiakkaatKerralla[1]);
 		sim.setRuokatiskinAikaMin(ruokatiskinAikaRajat[0]);
 		sim.setRuokatiskinAikaMax(ruokatiskinAikaRajat[1]);
 		sim.setKassanAikaMin(kassanAikaRajat[0]);
@@ -330,7 +334,7 @@ public class OmaMoottori extends Moottori {
 	}
 	
 	public void reset() {
-		Asiakas a = new Asiakas();
+		Asiakas a = new Asiakas("reset");
 		Palvelupiste pp = new Palvelupiste();
 		a.reset();
 		pp.reset();

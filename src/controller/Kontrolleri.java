@@ -14,8 +14,7 @@ public class Kontrolleri implements IKontrolleri{   // UUSI
 	
 	public Kontrolleri(ISimulaattorinUI ui) {
 		this.ui = ui;
-		moottori = new OmaMoottori(this); // luodaan uusi moottorisäie jokaista simulointia varten
-		
+		moottori = new OmaMoottori(this); // luodaan uusi moottorisäie jokaista simulointia varten	
 	}
 		
 	@Override
@@ -96,5 +95,35 @@ public class Kontrolleri implements IKontrolleri{   // UUSI
 	
 	public void reset() {
 		moottori.reset();
+	}
+
+	@Override
+	public double getIpKassaMax() {
+		return ui.getIpKassaMax();
+	}
+
+	@Override
+	public double getIpKassaMin() {
+		return ui.getIpKassaMin();
+	}
+
+	@Override
+	public double getKassaMax() {
+		return ui.getKassaMax();
+	}
+
+	@Override
+	public double getKassaMin() {
+		return ui.getKassaMin();
+	}
+
+	@Override
+	public double getRuokaMax() {
+		return ui.getRuokaMax();
+	}
+
+	@Override
+	public double getRuokaMin() {
+		return ui.getRuokaMin();
 	}
 }

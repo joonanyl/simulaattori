@@ -62,6 +62,19 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 	private TextField viiveTF;
 
 	@FXML
+	private TextField ruokaMin;
+	@FXML
+	private TextField ruokaMax;
+	@FXML
+	private TextField kassaMin;
+	@FXML
+	private TextField kassaMax;
+	@FXML
+	private TextField ipKassaMin;
+	@FXML
+	private TextField ipKassaMax;
+
+	@FXML
 	private VBox ruokaVBox;
 	@FXML
 	private VBox kassaVBox;
@@ -139,8 +152,8 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 
 		// Tapahtumankäsittelijän luonti PalvelupisteenTyypin perusteella
 		// Palvelupisteet luodaan OmaMoottorissa järjestyksessä
-		// Ruokatiski->Kassa->IPKassa, jonka takia pp:n naytaTulos indeksi annetaan
-		// tietyssä järjestyksessä
+		// Ruokatiski->Kassa->IPKassa, jonka takia pp:n naytaTulos-metodin
+		// parametri-indeksi annetaan samassa järjestyksessä
 
 		if (ppT == PalvelupisteenTyyppi.RUOKATISKI) {
 			ruokaVBox.getChildren().add(pp);
@@ -163,10 +176,20 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 		}
 	}
 
+	// Palauttaa oletusarvot takaisin, jotta simulaation voi ajaa uudelleen.
 	public void reset() {
 		ruokaVBox.getChildren().clear();
 		kassaVBox.getChildren().clear();
 		ipKassaVbox.getChildren().clear();
+
+		aikaTF.setText("");
+		viiveTF.setText("");
+		ruokaMin.setText("");
+		ruokaMax.setText("");
+		kassaMin.setText("");
+		kassaMax.setText("");
+		ipKassaMin.setText("");
+		ipKassaMax.setText("");
 
 		ppTesti.clear();
 		asiakaslista.clear();
@@ -185,26 +208,27 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 		kaynnistaBtn.setDisable(false);
 	}
 
+	// Maksimimäärä palvelupisteitä/ppTyyppi: 6
 	public void lisaaRuokalinjasto() {
-		if (ruokalinjastot.size() < 4) {
+		if (ruokalinjastot.size() < 6) {
 			lisääPalvelupiste(PalvelupisteenTyyppi.RUOKATISKI);
-			if (ruokalinjastot.size() == 4)
+			if (ruokalinjastot.size() == 6)
 				ruokaPlus.setDisable(true);
 		}
 	}
 
 	public void lisaaKassa() {
-		if (kassat.size() < 3) {
+		if (kassat.size() < 6) {
 			lisääPalvelupiste(PalvelupisteenTyyppi.KASSA);
-			if (kassat.size() == 3)
+			if (kassat.size() == 6)
 				kassaPlus.setDisable(true);
 		}
 	}
 
 	public void lisaaIPKassa() {
-		if (ipKassat.size() < 3) {
+		if (ipKassat.size() < 6) {
 			lisääPalvelupiste(PalvelupisteenTyyppi.IPKASSA);
-			if (ipKassat.size() == 3)
+			if (ipKassat.size() == 6)
 				ipKassaPlus.setDisable(true);
 		}
 	}
@@ -221,7 +245,7 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 						+ " tulokset");
 				a.setContentText(tulokset[indeksi].getSimuTulos());
 				a.showAndWait();
-		}
+			}
 		} catch (NullPointerException e) {
 			throw e;
 		}
@@ -268,36 +292,6 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 		kontrolleri.nopeuta();
 	}
 
-	@Override
-	public double getAika() {
-		Long aika = (long) 0;
-		try {
-			aika = Long.parseLong(aikaTF.getText());
-		} catch (NumberFormatException e) {
-			Alert a = new Alert(AlertType.WARNING);
-			a.setTitle("Varoitus");
-			a.setHeaderText("Antamasi aika on syötettu annettu väärin");
-			a.setContentText("Tarkasta antamasi arvo. Muista, että voit syöttää vain numeroita!");
-			a.showAndWait();
-		}
-		return aika;	
-	}
-
-	@Override
-	public long getViive() {
-		Long viive = (long) 0;
-		try {
-			viive = Long.parseLong(viiveTF.getText());
-		} catch (NumberFormatException e) {
-			Alert a = new Alert(AlertType.WARNING);
-			a.setTitle("Varoitus");
-			a.setHeaderText("Antamasi viive on annettu väärin");
-			a.setContentText("Tarkasta antamasi arvo. Muista, että voit syöttää vain numeroita!");
-			a.showAndWait();
-		}
-		return viive;
-	}
-
 	public void varaaPalvelupiste(int i) {
 		ppTesti.get(i).setFill(Color.RED);
 	}
@@ -320,6 +314,36 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 		asiakaslista.add(asiakas);
 	}
 
+	@Override
+	public double getAika() {
+		Long aika = (long) 0;
+		try {
+			aika = Long.parseLong(aikaTF.getText());
+		} catch (NumberFormatException e) {
+			Alert a = new Alert(AlertType.WARNING);
+			a.setTitle("Varoitus");
+			a.setHeaderText("Antamasi aika on syötettu annettu väärin");
+			a.setContentText("Tarkasta antamasi arvo. Muista, että voit syöttää vain numeroita!");
+			a.showAndWait();
+		}
+		return aika;
+	}
+
+	@Override
+	public long getViive() {
+		Long viive = (long) 0;
+		try {
+			viive = Long.parseLong(viiveTF.getText());
+		} catch (NumberFormatException e) {
+			Alert a = new Alert(AlertType.WARNING);
+			a.setTitle("Varoitus");
+			a.setHeaderText("Antamasi viive on annettu väärin");
+			a.setContentText("Tarkasta antamasi arvo. Muista, että voit syöttää vain numeroita!");
+			a.showAndWait();
+		}
+		return viive;
+	}
+
 	public int getRuokalinjastot() {
 		return ruokalinjastot.size();
 	}
@@ -330,6 +354,48 @@ public class simuMainGUI extends Application implements ISimulaattorinUI {
 
 	public int getIPKassat() {
 		return ipKassat.size();
+	}
+
+	public double getRuokaMin() {
+		if (ruokaMin.getText() != "")
+			return Double.parseDouble(ruokaMin.getText());
+		else
+			return 0;
+	}
+
+	public double getRuokaMax() {
+		if (ruokaMax.getText() != "")
+			return Double.parseDouble(ruokaMax.getText());
+		else
+			return 0;
+	}
+
+	public double getKassaMin() {
+		if (kassaMin.getText() != "")
+			return Double.parseDouble(kassaMin.getText());
+		else
+			return 0;
+	}
+
+	public double getKassaMax() {
+		if (kassaMax.getText() != "")
+			return Double.parseDouble(kassaMax.getText());
+		else
+			return 0;
+	}
+
+	public double getIpKassaMin() {
+		if (ipKassaMin.getText() != "")
+			return Double.parseDouble(ipKassaMin.getText());
+		else
+			return 0;
+	}
+
+	public double getIpKassaMax() {
+		if (ipKassaMax.getText() != "")
+			return Double.parseDouble(ipKassaMax.getText());
+		else
+			return 0;
 	}
 
 	public static void main(String[] args) {
